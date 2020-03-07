@@ -60,7 +60,24 @@ export default {
   methods: {
     login () {
       this.$refs.loginForm.validate().then(() => {
-        alert(123)
+        // 如果成功，校验就会到达then
+        // 通过校验后，调用接口看手机号是否正确
+        this.$axios({
+          url: '/authorizations',
+          data: this.loginForm,
+          // data:{..this.loginForm,checked:null}
+          method: 'post'
+        }).then(result => {
+          // 成功之后，把要是token存于本地缓存
+          window.localStorage.setItem('user-token', result.data.data.token)
+          // 跳转到主页
+          this.$router.push('/home')
+        }).catch(() => {
+          // 第一种方式
+          // this.$message({ message: '用户名或验证码错误', type: 'error' })
+          // 第二种方式
+          this.$message.error('用户名或验证码错误')
+        })
       })
     }
   }
@@ -93,6 +110,9 @@ export default {
         height: 340px;
         .title{
             text-align: center;
+            img{
+              width: 190px;
+            }
         }
     }
 }

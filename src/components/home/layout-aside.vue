@@ -40,7 +40,7 @@
 
           <el-menu-item>
               <i class="el-icon-user-solid"></i>
-              <span>首页</span>
+              <span>个人信息</span>
            </el-menu-item>
       </el-menu>
   </div>

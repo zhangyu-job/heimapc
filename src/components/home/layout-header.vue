@@ -1,22 +1,22 @@
 <template>
   <el-row align="middle" type="flex" class="layout-header">
       <el-col class="left" :span="12">
-          <i class="el-icon-unfold"></i>
+          <i class="el-icon-s-unfold"></i>
           <span>晃晃宠物机构</span>
       </el-col>
       <!-- 右侧 -->
       <el-col class="right" :span="12" >
        <!-- 再次放置一个 row组件  align属性设置垂直对齐方式  justify设置 水平对齐属性-->
        <el-row type="flex" justify="end" align="middle">
-          <img src="https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=4019918972,823734246&fm=26&gp=0.jpg" alt="">
-          <!-- 下拉菜单 -->
-          <el-dropdown>
-              <span>晃晃</span>
+          <img :src="userInfo.photo" alt="">
+          <!-- 下拉菜单 点击曹丹会触发command事件-->
+          <el-dropdown @command="clickMenu">
+              <span>{{userInfo.name}}</span>
               <!-- 下拉内容需要具名插槽 -->
               <el-dropdown-menu slot="dropdown">
-                 <el-dropdown-item>个人信息</el-dropdown-item>
-                 <el-dropdown-item>git地址</el-dropdown-item>
-                 <el-dropdown-item>退出</el-dropdown-item>
+                 <el-dropdown-item command="info">个人信息</el-dropdown-item>
+                 <el-dropdown-item command="git">git地址</el-dropdown-item>
+                 <el-dropdown-item command="lgout">退出</el-dropdown-item>
               </el-dropdown-menu>
           </el-dropdown>
 
@@ -27,7 +27,36 @@
 
 <script>
 export default {
-
+  data () {
+    return {
+      userInfo: {}
+    }
+  },
+  methods: {
+    clickMenu (command) {
+      if (command === 'info') {
+        //   点击了个人信息
+      } else if (command === 'git') {
+        window.location.href = 'https://github.com/shuiruohanyu/94-heimatoutiaopc'
+      } else {
+        //   退出系统  1.删除token 2.跳转回登录页
+        window.localStorage.removeItem('user-token')
+        this.$router.push('/login')
+      }
+    }
+  },
+  created () {
+    const token = localStorage.getItem('user-token') // 拿钥匙，从缓存中取token
+    this.$axios({
+      url: '/user/profile', // 请求地址
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    }).then(result => {
+      // 加载成功要将数据复制给userInfo
+      this.userInfo = result.data.data
+    })
+  }
 }
 </script>
 

@@ -5,6 +5,7 @@ import ElementUI from 'element-ui'
 import axios from 'axios'
 import Components from '@/components'
 import 'element-ui/lib/theme-chalk/index.css'
+import '@/permission' // 引入权限模块
 import '@/style/index.less'
 Vue.config.productionTip = false
 Vue.use(Components)

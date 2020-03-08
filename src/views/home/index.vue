@@ -3,13 +3,14 @@
      <el-container>
      <el-aside style="width:230px">
        <!-- <h1>左侧导航区域</h1> -->
-       <layout-aside>左侧</layout-aside>
+       <layout-aside></layout-aside>
      </el-aside>
      <!-- 右侧 再嵌套一个 el-container -->
      <el-container>
        <!-- 再上下布局 -->
        <el-header>
-         <h1>顶部操作栏</h1>
+
+         <layout-header></layout-header>
        </el-header>
        <!-- 主要区域 -->
        <el-main>
@@ -24,10 +25,12 @@
 
 <script>
 import LayoutAside from '@/components/home/layout-aside'
+import LayoutHeader from '@/components/home/layout-header'
 
 export default {
   components: {
-    'layout-aside': LayoutAside
+    'layout-aside': LayoutAside,
+    'layout-header': LayoutHeader
   }
 }
 </script>

@@ -3,9 +3,11 @@ import App from './App.vue'
 import router from './router'
 import ElementUI from 'element-ui'
 import axios from 'axios'
+import Components from '@/components'
 import 'element-ui/lib/theme-chalk/index.css'
 import '@/style/index.less'
 Vue.config.productionTip = false
+Vue.use(Components)
 Vue.use(ElementUI)
 // 配置axios的baseURL   公共的请求头地址
 axios.defaults.baseURL = 'http://ttapi.research.itcast.cn/mp/v1_0'

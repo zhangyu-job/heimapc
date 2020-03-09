@@ -9,7 +9,7 @@
        <!-- 再次放置一个 row组件  align属性设置垂直对齐方式  justify设置 水平对齐属性-->
        <el-row type="flex" justify="end" align="middle">
           <img :src="userInfo.photo" alt="">
-          <!-- 下拉菜单 点击曹丹会触发command事件-->
+          <!-- 下拉菜单 点击菜单会触发command事件-->
           <el-dropdown @command="clickMenu">
               <span>{{userInfo.name}}</span>
               <!-- 下拉内容需要具名插槽 -->
@@ -46,15 +46,15 @@ export default {
     }
   },
   created () {
-    const token = localStorage.getItem('user-token') // 拿钥匙，从缓存中取token
+    // const token = localStorage.getItem('user-token') // 拿钥匙，从缓存中取token
     this.$axios({
-      url: '/user/profile', // 请求地址
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
+      url: '/user/profile' // 请求地址
+      // headers: {
+      //   Authorization: `Bearer ${token}`
+      // }
     }).then(result => {
       // 加载成功要将数据复制给userInfo
-      this.userInfo = result.data.data
+      this.userInfo = result.data
     })
   }
 }

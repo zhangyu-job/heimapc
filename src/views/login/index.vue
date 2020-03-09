@@ -69,6 +69,7 @@ export default {
           method: 'post'
         }).then(result => {
           // 成功之后，     把要是token存于本地缓存
+
           window.localStorage.setItem('user-token', result.data.data.token)
           // 跳转到主页
           this.$router.push('/home')

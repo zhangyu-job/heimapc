@@ -25,6 +25,16 @@
         </template>
       </el-table-column>
     </el-table>
+    <!-- 放置分页组件 -->
+    <el-row style="height:80px" type="flex" align="middle" justify="center">
+
+    <el-pagination background layout="prev,pager,next"
+    :page-size="page.pageSize"
+    :current-page="page.currentPage"
+    :total="page.total"
+    @current-change="changePage">
+    </el-pagination>
+    </el-row>
   </el-card>
 </template>
 
@@ -32,17 +42,31 @@
 export default {
   data () {
     return {
+      // 分页参数单独放置一个对象
+      page: {
+        total: 0,
+        currentPage: 1, // 默认的页码决定了当前页码是第几页
+        pageSize: 10 // 每页显示多少条
+      },
       list: [
       ]
     }
   },
   methods: {
+    // 页码改变事件
+    changePage (newPage) {
+      // 将最新页码赋值给当前页码
+      this.page.currentPage = newPage
+      this.getComment()
+    },
     // 获取评论数据
     getComment () {
       this.$axios({
         url: '/articles', // 请求地址
         params: {
-          response_type: 'comment' // 此参数用来控制获取数据类型
+          response_type: 'comment', // 此参数用来控制获取数据类型
+          page: this.page.currentPage, // 查对应页
+          per_page: this.page.pageSize // 查20条
         }
         // query参数要在axios传
         // params传get参数也就是query参数
@@ -50,6 +74,8 @@ export default {
       }).then(result => {
         // 将返回结果的数组给list
         this.list = result.data.results
+        // 获取完数据之后，将页数总数赋值给total
+        this.page.total = result.data.total_count
       })
     },
     formatterBool (row, column, cellValue, index) {

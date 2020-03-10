@@ -1,22 +1,30 @@
 <template>
   <el-card>
-      <!-- 放置面包屑组件 slot="header"表示面包屑会作为具名插槽给card的header部分-->
-      <bread-crumb slot="header">
+    <!-- 放置面包屑组件 slot="header"表示面包屑会作为具名插槽给card的header部分-->
+    <bread-crumb slot="header">
       <template slot="title">评论管理</template>
-      </bread-crumb>
-      <!-- 表格组件 -->
-      <el-table :data="list">
-          <!-- 使用el-table-column为列   prop表示显示的字段 -->
-          <el-table-column prop="title" width="500" label="标题"></el-table-column>
-          <!-- 用一个函数来返回布尔值 -->
-          <el-table-column :formatter="formatterBool" prop="comment_status" label="评论状态"></el-table-column>
-          <el-table-column prop="total_comment_count" label="纵评论数"></el-table-column>
-          <el-table-column prop="fans_comment_count" label="粉丝评论数"></el-table-column>
-          <el-table-column label="操作">
-              <el-button size="small" type="text">修改</el-button>
-              <el-button size="small" type="text">关闭评论</el-button>
-          </el-table-column>
-      </el-table>
+    </bread-crumb>
+    <!-- 表格组件 -->
+    <el-table :data="list">
+      <!-- 使用el-table-column为列   prop表示显示的字段 -->
+      <el-table-column prop="title" width="500" label="标题"></el-table-column>
+      <!-- 用一个函数来返回布尔值 -->
+      <el-table-column :formatter="formatterBool" prop="comment_status" label="评论状态"></el-table-column>
+      <el-table-column prop="total_comment_count" label="纵评论数"></el-table-column>
+      <el-table-column prop="fans_comment_count" label="粉丝评论数"></el-table-column>
+      <el-table-column label="操作">
+        <template slot-scope="obj">
+          <el-button size="small" type="text">修改</el-button>
+          <!-- 文本内容要根据当前行的评论状态显示打开或者关闭 -->
+          <!-- 作用域插槽---子组件中的数据，通过插槽传出slot-scope接收 -->
+          <el-button
+            @click="openOrClose(obj.row)"
+            size="small"
+            type="text"
+          >{{obj.row.comment_status?'关闭':'打开'}}评论</el-button>
+        </template>
+      </el-table-column>
+    </el-table>
   </el-card>
 </template>
 
@@ -47,6 +55,28 @@ export default {
     formatterBool (row, column, cellValue, index) {
       // 该函数需要返回一个值  用来显示
       return cellValue ? '正常' : '关闭'
+    },
+    // 打开或者关闭评论
+    openOrClose (row) {
+      const mess = row.comment_status ? '关闭' : '打开'
+      this.$confirm(`是否确定${mess}评论`, '提示').then(() => {
+        // 调用是否打开或者关闭接口
+        this.$axios({
+          url: '/comments/status',
+          method: 'put',
+          params: {
+            article_id: row.id
+          },
+          data: {
+            allow_comment: !row.comment_status
+          }
+        }).then(() => {
+          // 成功，提示消息，拉取数据
+          this.$message.success(`${mess}评论成功`)
+        }).catch(() => {
+          this.$message.error(`${mess}评论失败`)
+        })
+      })
     }
   },
   created () {
@@ -56,5 +86,4 @@ export default {
 </script>
 
 <style>
-
 </style>

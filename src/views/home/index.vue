@@ -1,7 +1,7 @@
 <template>
   <div>
      <el-container>
-     <el-aside style="width:230px">
+     <el-aside style="width:230px;background-color: #2e2f32;">
        <!-- <h1>左侧导航区域</h1> -->
        <layout-aside></layout-aside>
      </el-aside>

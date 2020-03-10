@@ -65,7 +65,9 @@ export default {
           url: '/comments/status',
           method: 'put',
           params: {
-            article_id: row.id
+            article_id: row.id.toString() // 要求文章idBigNumber类型转化为字符串
+            // 前端传字符串到后端，后端会将字符串转化为大数字类型
+            // 只需要保证id与传过去的id一致就行
           },
           data: {
             allow_comment: !row.comment_status

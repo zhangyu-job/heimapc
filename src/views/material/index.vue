@@ -5,44 +5,58 @@
     <bread-crumb slot="header">
       <template slot="title">素材管理</template>
     </bread-crumb>
+
+    <!-- 放置一个上传组件 -->
+    <!-- el-row可以布局 -->
+    <el-row type="flex" justify="end">
+      <!-- 上传组件要求必须穿action属性 可以给空字符 show-file-list是否显示上传列表-->
+      <el-upload :show-file-list="false" action="" :http-request="uploadImg">
+        <el-button type="primary" size="small">上传素材</el-button>
+      </el-upload>
+    </el-row>
+
     <!-- 放置标签页 v-model绑定的值就是当前选中的页签-->
     <el-tabs v-model="activeName" @tab-click="changeTab">
-        <!-- 放置label标签  表示显示的名称  name表示页签选中的值 -->
-        <el-tab-pane label="全部素材" name="all">
-            <!-- 内容  循环生成页面结构 -->
-            <div class="img-list">
-                <!-- 采用v-for对list数据进行循环 -->
-                <el-card class="img-card" v-for="item in list" :key="item.id">
-                    <img :src="item.url" alt="">
-                    <!-- 操作栏 -->
-                    <el-row class="operate" type="flex" justify="space-around" align="middle" >
-                        <i class="el-icon-star-on"></i>
-                        <i class="el-icon-delete-solid"></i>
-                    </el-row>
-                </el-card>
-            </div>
-        </el-tab-pane>
+      <!-- 放置label标签  表示显示的名称  name表示页签选中的值 -->
+      <el-tab-pane label="全部素材" name="all">
+        <!-- 内容  循环生成页面结构 -->
+        <div class="img-list">
+          <!-- 采用v-for对list数据进行循环 -->
+          <el-card class="img-card" v-for="item in list" :key="item.id">
+            <img :src="item.url" alt />
+            <!-- 操作栏 -->
+            <el-row class="operate" type="flex" justify="space-around" align="middle">
+              <i class="el-icon-star-on"></i>
+              <i class="el-icon-delete-solid"></i>
+            </el-row>
+          </el-card>
+        </div>
+      </el-tab-pane>
 
-        <el-tab-pane label="收藏素材" name="collect">
-            <!-- 内容  循环生成页面结构 -->
-            <div class="img-list">
-                <!-- 采用v-for对list数据进行循环 -->
-                <el-card class="img-card" v-for="item in list" :key="item.id">
-                    <img :src="item.url" alt="">
-                </el-card>
-            </div>
-        </el-tab-pane>
+      <el-tab-pane label="收藏素材" name="collect">
+        <!-- 内容  循环生成页面结构 -->
+        <div class="img-list">
+          <!-- 采用v-for对list数据进行循环 -->
+          <el-card class="img-card" v-for="item in list" :key="item.id">
+            <img :src="item.url" alt />
+          </el-card>
+        </div>
+      </el-tab-pane>
     </el-tabs>
     <!-- 放置一个公共的分页组件 -->
     <el-row type="flex" justify="center" style="height:80px" align="middle">
-        <!-- 放置分页组件
+      <!-- 放置分页组件
         监听分页组件的切换事件
-         -->
+      -->
 
-         <el-pagination background :total="page.total"
-         :current-page="page.currentPage"
-         :page-size="page.pageSize"
-         layout="prev,pager,next" @current-change="changePage"></el-pagination>
+      <el-pagination
+        background
+        :total="page.total"
+        :current-page="page.currentPage"
+        :page-size="page.pageSize"
+        layout="prev,pager,next"
+        @current-change="changePage"
+      ></el-pagination>
     </el-row>
   </el-card>
 </template>
@@ -62,6 +76,24 @@ export default {
     }
   },
   methods: {
+    // 自定义一个上传方法
+    uploadImg (params) {
+      // params.file就是需要上传的图片文件
+      // 接口参数类型要求是formAta
+      const data = new FormData() // 实例化一个formData对象
+      data.append('image', params.file) // 加入文件参数
+      //   开始发送上传请求
+      this.$axios({
+        url: '/user/images',
+        method: 'post', // 上传或者新增一般都是post
+        data // es6简写
+      }).then(() => {
+        // 成功了就重新拉取数据
+        this.getMaterial()
+      }).catch(() => {
+        this.$message.error('上传素材失败')
+      })
+    },
     // 点击分页跳转
     changePage (newPage) {
       this.page.currentPage = newPage // 将新页码赋值给页码数据
@@ -98,31 +130,30 @@ export default {
 </script>
 
 <style lang="less" scorpt>
-.img-list{
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    .img-card{
-        width: 220px;
-        height: 240px;
-        margin: 20px 40px;
-        position: relative;
-        img{
-            width: 100%;
-            height: 100%;
-
-        }
-        .operate{
-            position: absolute;
-            left: 0;
-            bottom: 0;
-            width: 100%;
-            background-color: #f4f5f6;
-            height: 30px;
-            i{
-                font-size: 20px;
-            }
-        }
+.img-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  .img-card {
+    width: 220px;
+    height: 240px;
+    margin: 20px 40px;
+    position: relative;
+    img {
+      width: 100%;
+      height: 100%;
     }
+    .operate {
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      width: 100%;
+      background-color: #f4f5f6;
+      height: 30px;
+      i {
+        font-size: 20px;
+      }
+    }
+  }
 }
 </style>

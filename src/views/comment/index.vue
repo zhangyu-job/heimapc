@@ -1,5 +1,5 @@
 <template>
-  <el-card>
+  <el-card v-loading="loading">
     <!-- 放置面包屑组件 slot="header"表示面包屑会作为具名插槽给card的header部分-->
     <bread-crumb slot="header">
       <template slot="title">评论管理</template>
@@ -49,7 +49,8 @@ export default {
         pageSize: 10 // 每页显示多少条
       },
       list: [
-      ]
+      ],
+      loading: false // 控制loading遮罩层的显示或隐藏
     }
   },
   methods: {
@@ -61,6 +62,7 @@ export default {
     },
     // 获取评论数据
     getComment () {
+      this.loading = true // 打开遮罩层
       this.$axios({
         url: '/articles', // 请求地址
         params: {
@@ -76,6 +78,7 @@ export default {
         this.list = result.data.results
         // 获取完数据之后，将页数总数赋值给total
         this.page.total = result.data.total_count
+        this.loading = false // 请求完毕 关闭遮罩层
       })
     },
     formatterBool (row, column, cellValue, index) {

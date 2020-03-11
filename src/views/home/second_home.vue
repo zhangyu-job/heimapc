@@ -23,10 +23,14 @@ export default {
 }
 </script>
 
-<style>
+<style lang="less">
 .second-home {
   /* calc 在css中计算数值 变量之间和运算符之间一定要有空格*/
   height: calc(100vh - 60px);
   background-color: pink;
+  img{
+    width: 100%;
+    height: 100%;
+  }
 }
 </style>

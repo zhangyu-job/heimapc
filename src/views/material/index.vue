@@ -26,8 +26,8 @@
             <img :src="item.url" alt />
             <!-- 操作栏 -->
             <el-row class="operate" type="flex" justify="space-around" align="middle">
-              <i class="el-icon-star-on"></i>
-              <i class="el-icon-delete-solid"></i>
+              <i @click="collectOrCancel(item)" :style="{color:item.is_collected? 'red':'black'}" class="el-icon-star-on"></i>
+              <i @click="delMaterial(item)" class="el-icon-delete-solid"></i>
             </el-row>
           </el-card>
         </div>
@@ -76,6 +76,38 @@ export default {
     }
   },
   methods: {
+    // 删除素材的方法
+    delMaterial (row) {
+      // 删除之前提示一下
+      this.$confirm('您确定要删除吗', '提示').then(() => {
+        this.$axios({
+          url: `/user/images/${row.id}`,
+          method: 'delete'
+
+        }).then(() => {
+          // 删除成功  获取数据
+          this.getMaterial()
+        }).catch(() => {
+          this.$message.error('删除失败')
+        })
+      })
+    },
+    // 定义一个收藏或者取消收藏的方法
+    collectOrCancel (row) {
+      // 调用收藏和取消收藏接口
+      this.$axios({
+        method: 'put',
+        url: `/user/images/${row.id}`,
+        data: {
+          collect: !row.is_collected
+        }
+      }).then(() => {
+        // 成功了就重新加载
+        this.getMaterial()
+      }).catch(() => {
+        this.$message.error('操作失败')
+      })
+    },
     // 自定义一个上传方法
     uploadImg (params) {
       // params.file就是需要上传的图片文件

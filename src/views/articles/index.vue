@@ -35,14 +35,16 @@
       <span>共找到99条符合条件的内容</span>
     </el-row>
     <!-- 列表内容 article-item作为循环项-->
-    <div class="article-item" v-for="item in 6" :key="item">
+    <div class="article-item" v-for="item in list" :key="item.id.toString()">
       <!-- 左侧内容 -->
       <div class="left">
-        <img src="http://img5.imgtn.bdimg.com/it/u=3299138037,391931528&fm=26&gp=0.jpg" alt />
+          <!-- 设置文章封面 -->
+
+        <img :src="item.cover.images.length?item.cover.images[0]:defaultImg" alt />
         <div class="info">
-          <span>世界和平</span>
-          <el-tag class="tag">草稿</el-tag>
-          <span class="date">2020-03-12 17:03:54</span>
+          <span>{{item.title}}</span>
+          <el-tag :type="item.status|filterType" class="tag">{{item.status|filterStatus}}</el-tag>
+          <span class="date">{{item.pubdate}}</span>
         </div>
       </div>
       <!-- 右侧内容 -->
@@ -69,7 +71,38 @@ export default {
         channel_id: null, // 表示没有任何频道
         dateRange: [] // 日期范围
       },
-      channels: [] // 专门来接收频道数据
+      channels: [], // 专门来接收频道数据
+      list: [], // 定义list数据接收文章列表
+      defaultImg: require('../../assets/img/dog.jpg') // 地址变成了对象
+    }
+  },
+  // 过滤器，专门处理显示格式
+  filters: {
+    // 过滤器的第一个参数是value
+    filterStatus (value) {
+      switch (value) {
+        case 0:
+          return '草稿'
+        case 1:
+          return '待审核'
+        case 2:
+          return '已发表'
+        case 3:
+          return '审核失败'
+      }
+    },
+    // 根据不同类型值显示不同标签
+    filterType (value) {
+      switch (value) {
+        case 0:
+          return 'warning'
+        case 1:
+          return 'info'
+        case 2:
+          return ''
+        case 3:
+          return 'danger'
+      }
     }
   },
   methods: {
@@ -80,11 +113,21 @@ export default {
         // 获取频道接口的数据
         this.channels = result.data.channels
       })
+    },
+    // 获取文章列表
+    getArticales () {
+      this.$axios({
+        url: '/articles'
+      }).then(result => {
+        this.list = result.data.results // 获取文章列表
+      })
     }
+
   },
   created () {
     // 获取频道数据
     this.getChannels()
+    this.getArticales()
   }
 }
 </script>

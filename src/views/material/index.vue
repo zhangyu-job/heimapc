@@ -22,8 +22,8 @@
         <!-- 内容  循环生成页面结构 -->
         <div class="img-list">
           <!-- 采用v-for对list数据进行循环 -->
-          <el-card class="img-card" v-for="item in list" :key="item.id">
-            <img :src="item.url" alt />
+          <el-card class="img-card" v-for="(item,index) in list" :key="item.id">
+            <img :src="item.url" @click="selectImg(index)" alt />
             <!-- 操作栏 -->
             <el-row class="operate" type="flex" justify="space-around" align="middle">
               <i @click="collectOrCancel(item)" :style="{color:item.is_collected? 'red':'black'}" class="el-icon-star-on"></i>
@@ -37,8 +37,8 @@
         <!-- 内容  循环生成页面结构 -->
         <div class="img-list">
           <!-- 采用v-for对list数据进行循环 -->
-          <el-card class="img-card" v-for="item in list" :key="item.id">
-            <img :src="item.url" alt />
+          <el-card class="img-card" v-for="(item,index) in list" :key="item.id">
+            <img :src="item.url" @click="selectImg(index)" alt />
           </el-card>
         </div>
       </el-tab-pane>
@@ -58,6 +58,18 @@
         @current-change="changePage"
       ></el-pagination>
     </el-row>
+
+    <!-- 放置一个el-dialog组件   通过visible属性进行true false设置 -->
+    <el-dialog @opened="openEnd" :visible="dialogVisible" @close="dialogVisible=false">
+      <!-- 放置走马灯组件 -->
+      <el-carousel ref="myCarousel" indicator-position="outside" height="400px">
+        <!-- 放置幻灯片循环项  根据当前页list循环 -->
+        <el-carousel-item v-for="item in list" :key="item.id">
+        <!-- 放置图片 -->
+          <img style="width:100%;height:100%" :src="item.url" alt="">
+        </el-carousel-item>
+      </el-carousel>
+    </el-dialog>
   </el-card>
 </template>
 
@@ -65,6 +77,7 @@
 export default {
   data () {
     return {
+
       activeName: 'all', // 当前激活的是收藏页
       list: [], // 全部素材的数据   接收全部素材
       // 专门的对象存放分页信息
@@ -72,10 +85,21 @@ export default {
         currentPage: 1, // 默认第一页
         total: 0, // 当前总数
         pageSize: 8 // 每页多少条
-      }
+      },
+      dialogVisible: false, // 控制显示隐藏
+      clickIndex: -1 // 点击的索引
     }
   },
   methods: {
+    openEnd () {
+      // 这个时候已经打开结束  ref已经有值  可以通过ref进行赋值了  这个时候点击图片就会出现对应的图片（走马灯）
+      this.$refs.myCarousel.setActiveItem(this.clickIndex)
+    },
+    // 点击图片时调用
+    selectImg (index) {
+      this.clickIndex = index // 将索引赋值
+      this.dialogVisible = true // 打开索引
+    },
     // 删除素材的方法
     delMaterial (row) {
       // 删除之前提示一下

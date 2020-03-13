@@ -65,6 +65,16 @@
         </span>
       </div>
     </div>
+
+    <!-- 放置分页组件 -->
+    <el-row type="flex" justify="center" style="height:80px" align="middle">
+        <el-pagination
+        :current-page="page.currentPage"
+        :page-size="page.pageSize"
+        :total="page.total"
+        @current-change="changePage"
+        background layout="prev,pager,next"></el-pagination>
+    </el-row>
   </el-card>
 </template>
 
@@ -72,6 +82,11 @@
 export default {
   data () {
     return {
+      page: {
+        currentPage: 1,
+        pageSize: 10,
+        total: 0
+      },
       // 定义一个表单数据对象
       // 文章状态，0-草稿，1-待审核，2-审核通过，3-审核失败  不传为全部，定义5
       searchForm: {
@@ -88,8 +103,9 @@ export default {
   watch: {
     searchForm: {
       deep: true, // 固定写法，表示会深度检测searchForm中的数据变化
+      // handler也是固定写法   一旦数据发生任何变化  就会触发更新
       handler () {
-        // handler也是固定写法   一旦数据发生任何变化  就会触发更新
+        this.page.currentPage = 1 // 如果条件改变，就回到第一页
         this.changeCondition() // this指向当前组件实例
       }
     }
@@ -124,14 +140,22 @@ export default {
     }
   },
   methods: {
+    // 改变页码
+    changePage (newPage) {
+      // 先将最新的页码给到当前页码
+      this.page.currentPage = newPage
+      this.changeCondition() // 直接调用
+    },
     // 改变了选择条件
     changeCondition () {
       // 当触发此方法  表单数据已经是最新的了，接下来组装条件
       const params = {
+        page: this.page.currentPage, // 如果条件改变，就回到第一页
+        per_page: this.page.pageSize,
         status: this.searchForm.status === 5 ? null : this.searchForm.status,
         channel_id: this.searchForm.channel_id, // 就是表单数据
-        begin_pubdate: this.searchForm.dateRange.length ? this.searchForm.dateRange[0] : null,
-        end_pubdate: this.searchForm.dateRange.length > 1 ? this.searchForm.dateRange[1] : null
+        begin_pubdate: this.searchForm.dateRange && this.searchForm.dateRange.length ? this.searchForm.dateRange[0] : null,
+        end_pubdate: this.searchForm.dateRange && this.searchForm.dateRange.length > 1 ? this.searchForm.dateRange[1] : null
       }
 
       // 通过接口传入
@@ -153,6 +177,8 @@ export default {
         params // es6
       }).then(result => {
         this.list = result.data.results // 获取文章列表
+        // 将总数赋值给total
+        this.page.total = result.data.total_count
       })
     }
 

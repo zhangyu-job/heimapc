@@ -8,25 +8,33 @@
     <el-form style="padding-left:50px">
       <el-form-item label="文章状态 :">
         <!-- 放置单选按钮 -->
-        <el-radio-group v-model="searchForm.status">
+        <!-- 第一种方案 -->
+        <!-- <el-radio-group v-model="searchForm.status" @change="changeCondition"> -->
+        <el-radio-group v-model="searchForm.status" >
           <!-- 文章状态，0-草稿，1-待审核，2-审核通过，3-审核失败  不传为全部，定义5 -->
-          <el-radio label="5">全部</el-radio>
-          <el-radio label="0">草稿</el-radio>
-          <el-radio label="1">待审核</el-radio>
-          <el-radio label="2">审核通过</el-radio>
-          <el-radio label="3">审核失败</el-radio>
+          <el-radio :label="5">全部</el-radio>
+          <el-radio :label="0">草稿</el-radio>
+          <el-radio :label="1">待审核</el-radio>
+          <el-radio :label="2">审核通过</el-radio>
+          <el-radio :label="3">审核失败</el-radio>
         </el-radio-group>
       </el-form-item>
+
       <el-form-item label="频道类型 :">
         <!-- 选择器 -->
-        <el-select placeholder="请选择频道" v-model="searchForm.channel_id">
+        <!-- 第一种方案 -->
+        <!-- <el-select placeholder="请选择频道" @change="changeCondition" v-model="searchForm.channel_id"> -->
+        <el-select placeholder="请选择频道"  v-model="searchForm.channel_id">
           <!-- el-option是下拉选项，label是显示的值，value是绑定的值 -->
-          <el-option v-for="item in channels" :key="item.id" label="item.name" :value="item.id"></el-option>
+          <el-option v-for="item in channels" :key="item.id" :label="item.name" :value="item.id"></el-option>
         </el-select>
       </el-form-item>
+
       <el-form-item label="日期范围 :">
-        <!-- 日期选择器 设置type属性为daterange  表示选择的是一个日期范围-->
-        <el-date-picker type="daterange" v-model="searchForm.dateRange"></el-date-picker>
+        <!-- 日期选择器 设置type属性为daterange  表示选择的是一个日期范围 使用value-format指定绑定值格式-->
+        <!-- 第一种方案 -->
+        <!-- <el-date-picker type="daterange" @change="changeCondition" value-format="yyyy-MM-dd" v-model="searchForm.dateRange"></el-date-picker> -->
+        <el-date-picker type="daterange"  value-format="yyyy-MM-dd" v-model="searchForm.dateRange"></el-date-picker>
       </el-form-item>
     </el-form>
 
@@ -76,6 +84,16 @@ export default {
       defaultImg: require('../../assets/img/dog.jpg') // 地址变成了对象
     }
   },
+  // 监听data中的数据变化   第二种解决方案 watch监听对象的深度监听方案
+  watch: {
+    searchForm: {
+      deep: true, // 固定写法，表示会深度检测searchForm中的数据变化
+      handler () {
+        // handler也是固定写法   一旦数据发生任何变化  就会触发更新
+        this.changeCondition() // this指向当前组件实例
+      }
+    }
+  },
   // 过滤器，专门处理显示格式
   filters: {
     // 过滤器的第一个参数是value
@@ -106,6 +124,20 @@ export default {
     }
   },
   methods: {
+    // 改变了选择条件
+    changeCondition () {
+      // 当触发此方法  表单数据已经是最新的了，接下来组装条件
+      const params = {
+        status: this.searchForm.status === 5 ? null : this.searchForm.status,
+        channel_id: this.searchForm.channel_id, // 就是表单数据
+        begin_pubdate: this.searchForm.dateRange.length ? this.searchForm.dateRange[0] : null,
+        end_pubdate: this.searchForm.dateRange.length > 1 ? this.searchForm.dateRange[1] : null
+      }
+
+      // 通过接口传入
+      this.getArticales(params)
+    },
+    //   获取频道数据
     getChannels () {
       this.$axios({
         url: '/channels'
@@ -115,9 +147,10 @@ export default {
       })
     },
     // 获取文章列表
-    getArticales () {
+    getArticales (params) {
       this.$axios({
-        url: '/articles'
+        url: '/articles',
+        params // es6
       }).then(result => {
         this.list = result.data.results // 获取文章列表
       })

@@ -30,6 +30,9 @@ const routes = [
       }, {
         path: 'articles',
         component: () => import('@/views/articles')
+      }, {
+        path: 'publish', // 发布文章
+        component: () => import('@/views/publish')
       }
     ]
   },

@@ -60,7 +60,7 @@
         <span>
           <i class="el-icon-edit">修改</i>
         </span>
-        <span>
+        <span @click="delMaterial(item.id.toString())">
           <i class="el-icon-delete">删除</i>
         </span>
       </div>
@@ -140,6 +140,21 @@ export default {
     }
   },
   methods: {
+    // 删除
+    delMaterial (id) {
+      this.$confirm('您确定要删除此条数据吗').then(() => {
+        this.$axios({
+          method: 'delete',
+          url: `/articles/${id}`
+        }).then(() => {
+          // 不能直接调用this.getArticales,直接调用会意味着舍去了当前的页码和条件
+          // 应该带着条件去加载
+          this.changeCondition()
+        }).catch(() => {
+          this.$message.error('删除文章失败')
+        })
+      })
+    },
     // 改变页码
     changePage (newPage) {
       // 先将最新的页码给到当前页码

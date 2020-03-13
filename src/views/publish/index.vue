@@ -12,10 +12,10 @@
       </el-form-item>
 
       <el-form-item label="内容" prop="content">
-          <el-input v-model="publishForm.content" type="textarea" :rows="4" aria-placeholder="请输入您的内容" ></el-input>
+          <quill-editor v-model="publishForm.content" style="height:300px"></quill-editor>
       </el-form-item>
 
-      <el-form-item label="封面" prop="cover">
+      <el-form-item label="封面" prop="cover" style="margin-top:120px">
           <el-radio-group v-model="publishForm.cover.type">
               <el-radio :label="1">单图</el-radio>
               <el-radio :label="3">三图</el-radio>

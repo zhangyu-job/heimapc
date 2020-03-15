@@ -68,6 +68,29 @@ export default {
 
     }
   },
+  // 如果想要捕捉路由参数的变化，可以采用watch监听$route
+  watch: {
+    // watch是监听$route的变化
+    // 路由初始化之后   会把$route也放置在页面data中
+    $route: function (to, from) {
+      // 根据to属性中的params的articleId的变化来决定是不是改变数据
+      if (to.params.articleId) {
+        // 如果acricleId 有数据，就获得编辑文章的数据
+        this.getArticleById(to.params.articleId)
+      } else {
+        // 如果acricleId 没有数据，将表单数设置为空
+        this.publishForm = {
+          title: '',
+          content: '',
+          cover: {
+            type: 0,
+            images: []
+          },
+          channel_id: null
+        }
+      }
+    }
+  },
   methods: {
     // 接收cover-image传递过来的数据
     receiveImg (url, index) {

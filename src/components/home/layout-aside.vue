@@ -38,9 +38,9 @@
               <el-menu-item index='/home/fanslist'>粉丝管理</el-menu-item>
           </el-submenu>
 
-          <el-menu-item>
+          <el-menu-item index='/home/account'>
               <i class="el-icon-user-solid"></i>
-              <span index='/home/account'>个人信息</span>
+              <span >个人信息</span>
            </el-menu-item>
       </el-menu>
   </div>

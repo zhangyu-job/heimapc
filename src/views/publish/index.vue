@@ -15,8 +15,9 @@
           <quill-editor v-model="publishForm.content" style="height:300px"></quill-editor>
       </el-form-item>
 
-      <el-form-item label="封面" prop="cover" style="margin-top:120px">
-          <el-radio-group v-model="publishForm.cover.type">
+  <!-- 监听type的变化，type=1  单图，=3 三图  0和-1不传图 -->
+      <el-form-item label="封面" prop="cover" style="margin-top:120px" >
+          <el-radio-group v-model="publishForm.cover.type" @change="changeType">
               <el-radio :label="1">单图</el-radio>
               <el-radio :label="3">三图</el-radio>
               <el-radio :label="0">无图</el-radio>
@@ -66,6 +67,17 @@ export default {
     }
   },
   methods: {
+    // 改变类型事件
+    changeType () {
+      // 根据type的值对images进行控制
+      if (this.publishForm.cover.type === 1) {
+        this.publishForm.cover.images = [''] // 单图模式
+      } else if (this.publishForm.cover.type === 3) {
+        this.publishForm.cover.images = ['', '', ''] // 三图模式
+      } else {
+        this.publishForm.cover.images = [] // 无图或自动
+      }
+    },
     // 根据id获取文章详情数据
     getArticleById (id) {
       // 获取数据

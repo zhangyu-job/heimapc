@@ -7,6 +7,11 @@ Vue.use(VueRouter)
 
 const routes = [
   {
+    // 匹配任何找不到组建的路由
+    path: '*',
+    component: () => import('@/views/404')
+  },
+  {
     path: '/',
     redirect: '/home'
   },

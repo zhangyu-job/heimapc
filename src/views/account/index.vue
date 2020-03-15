@@ -30,7 +30,10 @@
 
       </el-form>
           <!-- 头像 -->
-          <img class="head-upload"  :src="formData.photo?formData.photo:defaultImg" alt="">
+            <!-- show-file-list为false表示不显示上传的文件列表 -->
+          <el-upload action="" :http-request="uploadImg" :show-file-list="false">
+            <img class="head-upload"  :src="formData.photo?formData.photo:defaultImg" alt="">
+          </el-upload>
   </el-card>
 </template>
 
@@ -62,6 +65,18 @@ export default {
       }).then(result => {
         // 将数据赋值给表单数据
         this.formData = result.data
+      })
+    },
+    uploadImg (params) {
+      const data = new FormData()
+      data.append('photo', params.file)
+      this.$axios({
+        url: '/user/photo',
+        method: 'patch',
+        data
+      }).then(result => {
+        this.formData.photo = result.data.photo
+        // 拿到新头像地址 但是头部组件没有更新
       })
     },
     saveUser () {

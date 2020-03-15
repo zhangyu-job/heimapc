@@ -24,6 +24,8 @@
               <el-radio :label="-1">自动</el-radio>
           </el-radio-group>
       </el-form-item>
+      <!-- 放置封面组件 -->
+      <cover-image @selectTwoImg="receiveImg" :list="publishForm.cover.images"></cover-image>
 
       <el-form-item label="频道" prop="channel_id">
         <el-select placeholder="请选择频道" v-model="publishForm.channel_id">
@@ -67,6 +69,13 @@ export default {
     }
   },
   methods: {
+    // 接收cover-image传递过来的数据
+    receiveImg (url, index) {
+      // 接收到了传递过来的封面数据
+      // 接下来更新images数组
+      //
+      this.publishForm.cover.images.splice(index, 1, url) // 删除替换元素
+    },
     // 改变类型事件
     changeType () {
       // 根据type的值对images进行控制

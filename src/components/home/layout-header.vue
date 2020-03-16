@@ -26,6 +26,7 @@
 </template>
 
 <script>
+import eventBus from '@/utils/eventBus' // 公共监听事件
 export default {
   data () {
     return {
@@ -43,18 +44,26 @@ export default {
         window.localStorage.removeItem('user-token')
         this.$router.push('/login')
       }
+    },
+    getUserInfo () {
+      // const token = localStorage.getItem('user-token') // 拿钥匙，从缓存中取token
+      this.$axios({
+        url: '/user/profile' // 请求地址
+        // headers: {
+        //   Authorization: `Bearer ${token}`
+        // }
+      }).then(result => {
+        // 加载成功要将数据复制给userInfo
+        this.userInfo = result.data
+      })
     }
   },
   created () {
-    // const token = localStorage.getItem('user-token') // 拿钥匙，从缓存中取token
-    this.$axios({
-      url: '/user/profile' // 请求地址
-      // headers: {
-      //   Authorization: `Bearer ${token}`
-      // }
-    }).then(result => {
-      // 加载成功要将数据复制给userInfo
-      this.userInfo = result.data
+    this.getUserInfo()
+    eventBus.$on('updateUser', () => {
+      // 如果有人触发了updateUser事件就会进入该函数
+      // 重新获取信息即可
+      this.getUserInfo()
     })
   }
 }

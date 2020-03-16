@@ -38,6 +38,7 @@
 </template>
 
 <script>
+import eventBus from '@/utils/eventBus'
 export default {
   data () {
     return {
@@ -77,6 +78,7 @@ export default {
       }).then(result => {
         this.formData.photo = result.data.photo
         // 拿到新头像地址 但是头部组件没有更新
+        eventBus.$emit('updateUser')
       })
     },
     saveUser () {
@@ -89,6 +91,8 @@ export default {
           data: this.formData
         }).then(() => {
           this.$message.success('保存用户信息成功')
+          // 广播一个消息  updateUser
+          eventBus.$emit('updateUser')
         }).catch(() => {
           this.$message.error('保存用户信息失败')
         })

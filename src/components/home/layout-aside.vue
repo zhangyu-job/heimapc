@@ -2,10 +2,10 @@
   <div class="layout-aside">
       <!-- 头部logo -->
       <div class="title">
-          <img src="../../assets/img/logo_admin.png" alt="">
+          <img :src="collapse?smallImg:bigImg" alt="">
       </div>
       <!-- 导航菜单 开启路由模式 :router="true"(完整模式)  router(简写模式)-->
-      <el-menu router background-color="#323745" text-color="#adafb5">
+      <el-menu :collapse="collapse" router background-color="#323745" text-color="#adafb5">
           <!-- 没有子菜单 -->
           <el-menu-item>
               <i class="el-icon-s-home"></i>
@@ -49,7 +49,13 @@
 
 <script>
 export default {
-
+  props: ['collapse'], // 接收父组件传出来的变量
+  data () {
+    return {
+      bigImg: require('../../assets/img/logo_admin.png'),
+      smallImg: require('../../assets/img/toutiao.png')
+    }
+  }
 }
 </script>
 
@@ -58,7 +64,7 @@ export default {
 
     background-color: #2e2f32;
     height: 100vh;
-    width: 230px;
+    // width: 230px;
     .title{
         text-align: center;
         padding: 10px 0;

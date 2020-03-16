@@ -1,7 +1,8 @@
 <template>
   <el-row align="middle" type="flex" class="layout-header">
       <el-col class="left" :span="12">
-          <i class="el-icon-s-unfold"></i>
+        <!-- 图标 -->
+          <i @click="collapse=!collapse" :class="{'el-icon-s-fold':!collapse,'el-icon-s-unfold':collapse}"></i>
           <span>晃晃宠物机构</span>
       </el-col>
       <!-- 右侧 -->
@@ -30,7 +31,15 @@ import eventBus from '@/utils/eventBus' // 公共监听事件
 export default {
   data () {
     return {
-      userInfo: {}
+      userInfo: {}, // 用户个人信息
+      collapse: false // 开始不是折叠的
+    }
+  },
+  // 监听data数据变化
+  watch: {
+    collapse () {
+      // 此时说明状态变了  通知左侧导航组件
+      eventBus.$emit('changeCollapse')
     }
   },
   methods: {

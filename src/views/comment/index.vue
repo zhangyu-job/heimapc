@@ -61,9 +61,31 @@ export default {
       this.getComment()
     },
     // 获取评论数据
-    getComment () {
+    // getComment () {
+    //   this.loading = true // 打开遮罩层
+    //   this.$axios({
+    //     url: '/articles', // 请求地址
+    //     params: {
+    //       response_type: 'comment', // 此参数用来控制获取数据类型
+    //       page: this.page.currentPage, // 查对应页
+    //       per_page: this.page.pageSize // 查20条
+    //     }
+    //     // query参数要在axios传
+    //     // params传get参数也就是query参数
+    //     // data 传body参数也就是请求体参数
+    //   }).then(result => {
+    //     // 将返回结果的数组给list
+    //     this.list = result.data.results
+    //     // 获取完数据之后，将页数总数赋值给total
+    //     this.page.total = result.data.total_count
+    //     this.loading = false // 请求完毕 关闭遮罩层
+    //   })
+    // },
+
+    // 获取评论数据   使用async和await
+    async getComment () {
       this.loading = true // 打开遮罩层
-      this.$axios({
+      const result = await this.$axios({
         url: '/articles', // 请求地址
         params: {
           response_type: 'comment', // 此参数用来控制获取数据类型
@@ -73,24 +95,49 @@ export default {
         // query参数要在axios传
         // params传get参数也就是query参数
         // data 传body参数也就是请求体参数
-      }).then(result => {
-        // 将返回结果的数组给list
-        this.list = result.data.results
-        // 获取完数据之后，将页数总数赋值给total
-        this.page.total = result.data.total_count
-        this.loading = false // 请求完毕 关闭遮罩层
       })
+      // 将返回结果的数组给list
+      this.list = result.data.results
+      // 获取完数据之后，将页数总数赋值给total
+      this.page.total = result.data.total_count
+      this.loading = false // 请求完毕 关闭遮罩层
     },
+
     formatterBool (row, column, cellValue, index) {
       // 该函数需要返回一个值  用来显示
       return cellValue ? '正常' : '关闭'
     },
     // 打开或者关闭评论
-    openOrClose (row) {
+    // openOrClose (row) {
+    //   const mess = row.comment_status ? '关闭' : '打开'
+    // this.$confirm(`是否确定${mess}评论`, '提示').then(() => {
+    //   // 调用是否打开或者关闭接口
+    //   this.$axios({
+    //     url: '/comments/status',
+    //     method: 'put',
+    //     params: {
+    //       article_id: row.id.toString() // 要求文章idBigNumber类型转化为字符串
+    //       // 前端传字符串到后端，后端会将字符串转化为大数字类型
+    //       // 只需要保证id与传过去的id一致就行
+    //     },
+    //     data: {
+    //       allow_comment: !row.comment_status
+    //     }
+    //   }).then(() => {
+    //     // 成功，提示消息，拉取数据
+    //     this.$message.success(`${mess}评论成功`)
+    //     this.getComment()
+    //   }).catch(() => {
+    //     this.$message.error(`${mess}评论失败`)
+    //   })
+    // })
+
+    async openOrClose (row) {
       const mess = row.comment_status ? '关闭' : '打开'
-      this.$confirm(`是否确定${mess}评论`, '提示').then(() => {
+      await this.$confirm(`是否确定${mess}评论`, '提示')
+      try {
         // 调用是否打开或者关闭接口
-        this.$axios({
+        await this.$axios({
           url: '/comments/status',
           method: 'put',
           params: {
@@ -101,13 +148,13 @@ export default {
           data: {
             allow_comment: !row.comment_status
           }
-        }).then(() => {
-          // 成功，提示消息，拉取数据
-          this.$message.success(`${mess}评论成功`)
-        }).catch(() => {
-          this.$message.error(`${mess}评论失败`)
         })
-      })
+        // 成功，提示消息，拉取数据
+        this.$message.success(`${mess}评论成功`)
+        this.getComment()
+      } catch (error) {
+        this.$message.error(`${mess}评论失败`)
+      }
     }
   },
   created () {

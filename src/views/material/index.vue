@@ -117,21 +117,39 @@ export default {
       })
     },
     // 定义一个收藏或者取消收藏的方法
-    collectOrCancel (row) {
+    // collectOrCancel (row) {
+    //   // 调用收藏和取消收藏接口
+    //   this.$axios({
+    //     method: 'put',
+    //     url: `/user/images/${row.id}`,
+    //     data: {
+    //       collect: !row.is_collected
+    //     }
+    //   }).then(() => {
+    //     // 成功了就重新加载
+    //     this.getMaterial()
+    //   }).catch(() => {
+    //     this.$message.error('操作失败')
+    //   })
+    // },
+
+    async collectOrCancel (row) {
       // 调用收藏和取消收藏接口
-      this.$axios({
-        method: 'put',
-        url: `/user/images/${row.id}`,
-        data: {
-          collect: !row.is_collected
-        }
-      }).then(() => {
+      try {
+        await this.$axios({
+          method: 'put',
+          url: `/user/images/${row.id}`,
+          data: {
+            collect: !row.is_collected
+          }
+        })
         // 成功了就重新加载
         this.getMaterial()
-      }).catch(() => {
+      } catch (error) {
         this.$message.error('操作失败')
-      })
+      }
     },
+
     // 自定义一个上传方法
     uploadImg (params) {
       // params.file就是需要上传的图片文件
